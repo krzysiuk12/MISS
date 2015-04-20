@@ -1,10 +1,9 @@
 package pl.edu.agh.miss.tests;
 
-import pl.edu.agh.miss.graph.Graph;
 import pl.edu.agh.miss.path.Path;
-import pl.edu.agh.miss.solver.DijkstraSolver;
-import pl.edu.agh.miss.solver.DistanceDijkstraSolver;
-import pl.edu.agh.miss.vertices.Vertex;
+import pl.edu.agh.miss.problem.Problem;
+import pl.edu.agh.miss.problem.ProblemUnit;
+import pl.edu.agh.miss.solver.MainSolver;
 
 /**
  * Created by Krzysztof Kicinger on 2015-04-20.
@@ -13,18 +12,11 @@ public class MainTest {
 
     public static void main(String[] args) {
         IGraphTest graphTest = new GraphTest();
-        Graph graph = graphTest.createTestGraph();
-        Vertex source = graphTest.getSourceVertex();
-        Vertex target = graphTest.getTargetVertex();
+        Problem problem = new Problem(graphTest.getGraph(), graphTest.getSourceVertex(), graphTest.getTargetVertex(), ProblemUnit.DISTANCE);
 
-        DijkstraSolver dijkstraSolver = new DistanceDijkstraSolver();
-        dijkstraSolver.computePaths(source);
+        Path result = MainSolver.solveProblem(problem);
 
-        for (Vertex v : graph.getVertices()) {
-            System.out.println("Distance to " + v + ": " + dijkstraSolver.getVertexWeight(v));
-            Path path = dijkstraSolver.getShortestPathToTarget(v);
-            System.out.println("Path: " + path);
-        }
+        System.out.println("Path: " + result);
     }
 
 }

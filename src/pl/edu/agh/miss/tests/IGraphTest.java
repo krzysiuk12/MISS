@@ -8,7 +8,7 @@ import pl.edu.agh.miss.vertices.Vertex;
  */
 public interface IGraphTest {
 
-    public Graph createTestGraph();
+    public Graph getGraph();
 
     public Vertex getSourceVertex();
 

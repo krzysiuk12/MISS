@@ -24,6 +24,13 @@ public class Path {
         this.middleVertices = middleVertices;
     }
 
+    public Vertex getNextVertex(Vertex startVertex) {
+        List<Vertex> allVertices = new ArrayList<Vertex>(getMiddleVertices());
+        allVertices.add(0, getSource());
+        allVertices.add(getTarget());
+        return allVertices.get(allVertices.indexOf(startVertex) + 1);
+    }
+
     public Vertex getSource() {
         return source;
     }
