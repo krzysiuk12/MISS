@@ -11,11 +11,9 @@ import pl.edu.agh.miss.solver.MainSolver;
 public class MainTest {
 
     public static void main(String[] args) {
-        IGraphTest graphTest = new GraphTest();
+        IGraphTest graphTest = new GraphTest1();
         Problem problem = new Problem(graphTest.getGraph(), graphTest.getSourceVertex(), graphTest.getTargetVertex(), ProblemUnit.DISTANCE);
-
         Path result = MainSolver.solveProblem(problem);
-
         System.out.println("Path: " + result);
     }
 

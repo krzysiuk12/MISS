@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Krzysztof Kicinger on 2015-04-20.
  */
-public class GraphTest implements IGraphTest {
+public class GraphTest1 implements IGraphTest {
 
     private Graph graph;
     private Vertex source;
@@ -61,8 +61,8 @@ public class GraphTest implements IGraphTest {
                 }
             });
 
-            this.source = redville;
-            this.target = purpleville;
+            this.source = blueville;
+            this.target = orangeville;
 
             graph = new Graph("Redville Simple Test");
             graph.addVertex(redville);

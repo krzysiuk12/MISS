@@ -19,9 +19,14 @@ public class MainSolver {
             dijkstraSolver.computePaths(currentVertex);
             Path currentPath = dijkstraSolver.getShortestPathToTarget(problem.getTarget());
             Vertex nextVertex = currentPath.getNextVertex(currentVertex);
+
+            System.out.println("Current Path: " + currentPath);
+            System.out.println("Current Step: " + currentVertex + " -> " + nextVertex);
+
             resultPath.getMiddleVertices().add(nextVertex);
             currentVertex = nextVertex;
             //TODO: SYMULACJA WARUNKOW
+
         }
         resultPath.setTarget(resultPath.getMiddleVertices().remove(resultPath.getMiddleVertices().size() - 1));
         return resultPath;
