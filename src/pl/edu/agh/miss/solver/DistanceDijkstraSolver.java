@@ -21,7 +21,7 @@ public class DistanceDijkstraSolver extends DijkstraSolver {
     }
 
     @Override
-    protected double getVertexWeight(Vertex vertex) {
+    public double getVertexWeight(Vertex vertex) {
         return vertex.getMinDistance();
     }
 

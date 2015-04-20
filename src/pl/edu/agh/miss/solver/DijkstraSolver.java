@@ -2,11 +2,9 @@ package pl.edu.agh.miss.solver;
 
 import pl.edu.agh.miss.edges.DirectedEdge;
 import pl.edu.agh.miss.edges.Edge;
+import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.vertices.Vertex;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -35,14 +33,20 @@ public abstract class DijkstraSolver {
         }
     }
 
-    public List<Vertex> getShortestPathToTarget(Vertex target) {
-        List<Vertex> path = new ArrayList<Vertex>();
-        Vertex vertex = target;
+    public Path getShortestPathToTarget(Vertex target) {
+        Path path = new Path();
+        path.setTarget(target);
+        Vertex vertex = target.getPreviousVertex();
         while (vertex != null) {
-            path.add(vertex);
+            path.getMiddleVertices().add(0, vertex);
             vertex = vertex.getPreviousVertex();
         }
-        Collections.reverse(path);
+        if(path.getMiddleVertices().isEmpty()) {
+            path.setSource(path.getTarget());
+        } else {
+            path.setSource(path.getMiddleVertices().get(0));
+            path.getMiddleVertices().remove(0);
+        }
         return path;
     }
 
@@ -50,7 +54,7 @@ public abstract class DijkstraSolver {
 
     protected abstract double getEdgeWeight(Edge edge);
 
-    protected abstract double getVertexWeight(Vertex vertex);
+    public abstract double getVertexWeight(Vertex vertex);
 
     protected abstract void setVertexValues(Vertex vertex, double weight, Vertex previous);
 
