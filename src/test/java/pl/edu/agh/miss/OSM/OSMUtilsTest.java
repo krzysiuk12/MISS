@@ -22,5 +22,6 @@ public class OSMUtilsTest {
         Document document = docBuilder.parse(this.getClass().getResourceAsStream("/test.xml"));
         List<OSMWay> waysWithNodes = getWaysWithNodes(document);
         Assert.assertEquals(waysWithNodes.size(), 1);
+        Assert.assertEquals(waysWithNodes.get(0).getNodes().size(), 3);
     }
 }

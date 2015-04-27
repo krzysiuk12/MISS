@@ -10,5 +10,23 @@ import java.util.Map;
  */
 public class OSMWay {
     List nodes = new ArrayList<OSMNode>();
+
     Map tags = new HashMap<String, String>();
+
+    public Map getTags() {
+        return tags;
+    }
+
+    public void setTags(Map tags) {
+        this.tags = tags;
+    }
+
+    public List getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(List nodes) {
+        this.nodes = nodes;
+    }
+
 }
