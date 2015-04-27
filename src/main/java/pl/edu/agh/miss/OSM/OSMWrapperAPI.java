@@ -2,10 +2,9 @@ package pl.edu.agh.miss.OSM;
 
 /**
  * Created by slonka on 27.04.15.
- * <p/>
+ *
  * (c) Jens Kübler
  * This software is public domain
- * <p/>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -16,8 +15,7 @@ package pl.edu.agh.miss.OSM;
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-/**
+ *
  * (c) Jens Kübler
  * This software is public domain
  *
@@ -35,24 +33,23 @@ package pl.edu.agh.miss.OSM;
  */
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+
+import static pl.edu.agh.miss.OSM.OSMUtils.getNodes;
+import static pl.edu.agh.miss.OSM.OSMUtils.readFileAsString;
 
 /**
  *
@@ -107,61 +104,10 @@ public class OSMWrapperAPI {
         return docBuilder.parse(connection.getInputStream());
     }
 
-    public static Document getXMLFile(String location) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbfac = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = dbfac.newDocumentBuilder();
-        return docBuilder.parse(location);
-    }
-
-    /**
-     *
-     * @param xmlDocument
-     * @return a list of openseamap nodes extracted from xml
-     */
-    @SuppressWarnings("nls")
-    public static List<OSMNode> getNodes(Document xmlDocument) {
-        List<OSMNode> osmNodes = new ArrayList<OSMNode>();
-
-        // Document xml = getXML(8.32, 49.001);
-        Node osmRoot = xmlDocument.getFirstChild();
-        NodeList osmXMLNodes = osmRoot.getChildNodes();
-        for (int i = 1; i < osmXMLNodes.getLength(); i++) {
-            Node item = osmXMLNodes.item(i);
-            if (item.getNodeName().equals("node")) {
-                NamedNodeMap attributes = item.getAttributes();
-                NodeList tagXMLNodes = item.getChildNodes();
-                Map<String, String> tags = new HashMap<String, String>();
-                for (int j = 1; j < tagXMLNodes.getLength(); j++) {
-                    Node tagItem = tagXMLNodes.item(j);
-                    NamedNodeMap tagAttributes = tagItem.getAttributes();
-                    if (tagAttributes != null) {
-                        tags.put(tagAttributes.getNamedItem("k").getNodeValue(), tagAttributes.getNamedItem("v")
-                                .getNodeValue());
-                    }
-                }
-                Node namedItemID = attributes.getNamedItem("id");
-                Node namedItemLat = attributes.getNamedItem("lat");
-                Node namedItemLon = attributes.getNamedItem("lon");
-                Node namedItemVersion = attributes.getNamedItem("version");
-
-                String id = namedItemID.getNodeValue();
-                String latitude = namedItemLat.getNodeValue();
-                String longitude = namedItemLon.getNodeValue();
-                String version = "0";
-                if (namedItemVersion != null) {
-                    version = namedItemVersion.getNodeValue();
-                }
-
-                osmNodes.add(new OSMNode(id, latitude, longitude, version, tags));
-            }
-
-        }
-        return osmNodes;
-    }
 
     public static List<OSMNode> getOSMNodesInVicinity(double lat, double lon, double vicinityRange) throws IOException,
             SAXException, ParserConfigurationException {
-        return OSMWrapperAPI.getNodes(getXML(lon, lat, vicinityRange));
+        return getNodes(getXML(lon, lat, vicinityRange));
     }
 
     /**
@@ -192,25 +138,6 @@ public class OSMWrapperAPI {
         return docBuilder.parse(connection.getInputStream());
     }
 
-    /**
-     *
-     * @param filePath
-     * @return
-     * @throws java.io.IOException
-     */
-    private static String readFileAsString(String filePath) throws java.io.IOException {
-        StringBuffer fileData = new StringBuffer(1000);
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
-        char[] buf = new char[1024];
-        int numRead = 0;
-        while ((numRead = reader.read(buf)) != -1) {
-            String readData = String.valueOf(buf, 0, numRead);
-            fileData.append(readData);
-            buf = new char[1024];
-        }
-        reader.close();
-        return fileData.toString();
-    }
 
     /**
      * main method that simply reads some nodes
