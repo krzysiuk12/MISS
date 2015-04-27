@@ -8,5 +8,12 @@
     <artifactId>MISS</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    
+    <dependencies>
+        <dependency>
+            <groupId>org.openstreetmap.osmosis</groupId>
+            <artifactId>osmosis-core</artifactId>
+            <version>0.43-RELEASE</version>
+        </dependency>
+    </dependencies>
+
 </project>
