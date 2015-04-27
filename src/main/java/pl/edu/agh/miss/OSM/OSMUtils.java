@@ -30,23 +30,13 @@ public class OSMUtils {
     public static List<OSMNode> getNodes(Document xmlDocument) {
         List<OSMNode> osmNodes = new ArrayList<OSMNode>();
 
-        // Document xml = getXML(8.32, 49.001);
         Node osmRoot = xmlDocument.getFirstChild();
         NodeList osmXMLNodes = osmRoot.getChildNodes();
         for (int i = 1; i < osmXMLNodes.getLength(); i++) {
             Node item = osmXMLNodes.item(i);
             if (item.getNodeName().equals("node")) {
                 NamedNodeMap attributes = item.getAttributes();
-                NodeList tagXMLNodes = item.getChildNodes();
-                Map<String, String> tags = new HashMap<String, String>();
-                for (int j = 1; j < tagXMLNodes.getLength(); j++) {
-                    Node tagItem = tagXMLNodes.item(j);
-                    NamedNodeMap tagAttributes = tagItem.getAttributes();
-                    if (tagAttributes != null) {
-                        tags.put(tagAttributes.getNamedItem("k").getNodeValue(), tagAttributes.getNamedItem("v")
-                                .getNodeValue());
-                    }
-                }
+                Map<String, String> tags = getTags(item);
                 Node namedItemID = attributes.getNamedItem("id");
                 Node namedItemLat = attributes.getNamedItem("lat");
                 Node namedItemLon = attributes.getNamedItem("lon");
@@ -65,6 +55,61 @@ public class OSMUtils {
 
         }
         return osmNodes;
+    }
+    /**
+     * @param xmlDocument
+     * @return a list of openseamap nodes extracted from xml
+     */
+    @SuppressWarnings("nls")
+    public static List<OSMWay> getWaysWithNodes(Document xmlDocument) {
+        Map<String, OSMNode> osmNodes = new HashMap<String, OSMNode>();
+        List<OSMWay> osmWays = new ArrayList<OSMWay>();
+
+        Node osmRoot = xmlDocument.getFirstChild();
+        NodeList osmXMLNodes = osmRoot.getChildNodes();
+        for (int i = 1; i < osmXMLNodes.getLength(); i++) {
+            Node item = osmXMLNodes.item(i);
+            if (item.getNodeName().equals("node")) {
+                Map<String, String> tags = getTags(item);
+                NamedNodeMap attributes = item.getAttributes();
+
+                String id = attributes.getNamedItem("id").getNodeValue();
+                String latitude = attributes.getNamedItem("lat").getNodeValue();
+                String longitude = attributes.getNamedItem("lon").getNodeValue();
+                String version = "0";
+                if (attributes.getNamedItem("version") != null) {
+                    version = attributes.getNamedItem("version").getNodeValue();
+                }
+
+                osmNodes.put(id, new OSMNode(id, latitude, longitude, version, tags));
+            } else if (item.getNodeName().equals("way")){
+                NodeList nodeList = item.getChildNodes();
+                OSMWay way = new OSMWay();
+                for(int j = 1; j < nodeList.getLength(); j++) {
+                    Node osmNode = nodeList.item(j);
+
+                    String nodeId = osmNode.getAttributes().getNamedItem("ref").getNodeValue();
+                    OSMNode node = osmNodes.get(nodeId);
+                    way.nodes.add(node);
+                }
+                osmWays.add(way);
+            }
+        }
+        return osmWays;
+    }
+
+    private static Map<String, String> getTags(Node item) {
+        NodeList tagXMLNodes = item.getChildNodes();
+        Map<String, String> tags = new HashMap<String, String>();
+        for (int j = 1; j < tagXMLNodes.getLength(); j++) {
+            Node tagItem = tagXMLNodes.item(j);
+            NamedNodeMap tagAttributes = tagItem.getAttributes();
+            if (tagAttributes != null) {
+                tags.put(tagAttributes.getNamedItem("k").getNodeValue(), tagAttributes.getNamedItem("v")
+                        .getNodeValue());
+            }
+        }
+        return tags;
     }
 
     public static Document getXMLFile(String location) throws ParserConfigurationException, SAXException, IOException {
