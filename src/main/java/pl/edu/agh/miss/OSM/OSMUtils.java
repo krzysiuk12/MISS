@@ -87,10 +87,11 @@ public class OSMUtils {
                 OSMWay way = new OSMWay();
                 for(int j = 1; j < nodeList.getLength(); j++) {
                     Node osmNode = nodeList.item(j);
-
-                    String nodeId = osmNode.getAttributes().getNamedItem("ref").getNodeValue();
-                    OSMNode node = osmNodes.get(nodeId);
-                    way.nodes.add(node);
+                    if(osmNode.getNodeType() == Node.ELEMENT_NODE) {
+                        String nodeId = osmNode.getAttributes().getNamedItem("ref").getNodeValue();
+                        OSMNode node = osmNodes.get(nodeId);
+                        way.nodes.add(node);
+                    }
                 }
                 osmWays.add(way);
             }
