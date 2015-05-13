@@ -2,10 +2,10 @@ package pl.edu.agh.miss.solver;
 
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
+import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -19,7 +19,7 @@ public class MapSolverService implements ISolverService {
 
     private Map map;
     private Set<ISolver> solvers = new HashSet<ISolver>();
-    private Set<Future<List<Node>>> results = new HashSet<Future<List<Node>>>();
+    private Set<Future<Path>> results = new HashSet<Future<Path>>();
     private ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public MapSolverService(Map map) {
@@ -30,14 +30,14 @@ public class MapSolverService implements ISolverService {
     @Override
     public void findPath(Node startNode, Node endNode) {
         for(ISolver solver : solvers) {
-            Callable<List<Node>> callableSolver = createCallableSolver(solver, startNode, endNode, map);
+            Callable<Path> callableSolver = createCallableSolver(solver, startNode, endNode, map);
             results.add(executor.submit(callableSolver));
         }
     }
 
     @Override
-    public List<Node> getPath() throws Exception {
-        for(Future<List<Node>> result : results) {
+    public Path getPath() throws Exception {
+        for(Future<Path> result : results) {
             if(result.isDone()) {
                 return result.get();
             }
@@ -45,10 +45,10 @@ public class MapSolverService implements ISolverService {
         return null;
     }
 
-    private Callable<List<Node>> createCallableSolver(final ISolver solver, final Node start, final Node end, final Map map) {
-        return new Callable<List<Node>>() {
+    private Callable<Path> createCallableSolver(final ISolver solver, final Node start, final Node end, final Map map) {
+        return new Callable<Path>() {
             @Override
-            public List<Node> call() throws Exception {
+            public Path call() throws Exception {
                 return solver.findPath(start, end, map);
             }
         };

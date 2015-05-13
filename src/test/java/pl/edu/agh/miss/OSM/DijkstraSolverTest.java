@@ -8,11 +8,11 @@ import pl.edu.agh.miss.map.way.DistanceUnit;
 import pl.edu.agh.miss.map.way.DistanceWeight;
 import pl.edu.agh.miss.map.way.Way;
 import pl.edu.agh.miss.map.way.WayType;
+import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,8 +48,8 @@ public class DijkstraSolverTest {
         DijkstraSolver dijkstraSolver = new DijkstraSolver();
         Node start = map.getNodeByName("Redville");
         Node end = map.getNodeByName("Purpleville");
-        List<Node> nodes = dijkstraSolver.findPath(start, end, map);
-        System.out.println(nodes);
+        Path path = dijkstraSolver.findPath(start, end, map);
+        System.out.println(path);
     }
 
 }

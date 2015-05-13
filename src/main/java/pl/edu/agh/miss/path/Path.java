@@ -49,10 +49,13 @@ public class Path {
 
     @Override
     public String toString() {
+        final String separator = " -> ";
         final StringBuffer sb = new StringBuffer("Path{");
         for(Node node : nodes) {
-            sb.append(node.getName()).append(" -> ");
+            sb.append(node.getName()).append(separator);
         }
-        return sb.substring(0, sb.length() - 4).toString();
+        sb.replace(sb.length() - separator.length(), sb.length(), "");
+        sb.append("}");
+        return sb.toString();
     }
 }
