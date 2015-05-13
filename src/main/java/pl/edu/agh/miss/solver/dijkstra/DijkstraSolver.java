@@ -3,6 +3,7 @@ package pl.edu.agh.miss.solver.dijkstra;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
 import pl.edu.agh.miss.map.way.Way;
+import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.solver.ISolver;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public class DijkstraSolver implements ISolver {
     private PriorityQueue<Vertex> verticesQueue = new PriorityQueue<Vertex>();
 
     @Override
-    public List<Node> findPath(Node start, Node end, Map map) {
+    public Path findPath(Node start, Node end, Map map) {
         // System.out.println("Start: " + start + "\nEnd: " + end);
         initializeVertices(map.getNodes());
         Vertex sourceVertex = getVertexByNode(start);
@@ -39,7 +40,7 @@ public class DijkstraSolver implements ISolver {
             }
         }
 
-        return getPath(end);
+        return getPath(end, map);
     }
 
     private void initializeVertices(Set<Node> nodes) {
@@ -70,7 +71,14 @@ public class DijkstraSolver implements ISolver {
         vertex.setPreviousNode(previous != null ? previous.getNode() : null);
     }
 
-    private List<Node> getPath(Node end) {
+    private Path getPath(Node end, Map map) {
+        List<Node> nodes = getListOfNodes(end);
+        List<Way> ways = getListOfWays(nodes, map);
+        double totalCost = getTotalCost(end);
+        return new Path(nodes, ways, totalCost);
+    }
+
+    private List<Node> getListOfNodes(Node end) {
         Vertex currentVertex = getVertexByNode(end);
         List<Node> path = new ArrayList<Node>();
         while(currentVertex != null) {
@@ -79,6 +87,18 @@ public class DijkstraSolver implements ISolver {
         }
         Collections.reverse(path);
         return path;
+    }
+
+    private List<Way> getListOfWays(List<Node> nodes, Map map) {
+        List<Way> ways = new ArrayList<Way>();
+        for(int index = 1; index < nodes.size(); index++) {
+            ways.add(map.getWay(nodes.get(index - 1), nodes.get(index)));
+        }
+        return ways;
+    }
+
+    private double getTotalCost(Node end) {
+        return getVertexByNode(end).getTotalCost();
     }
 
 }
