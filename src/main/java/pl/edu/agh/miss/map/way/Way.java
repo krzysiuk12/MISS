@@ -64,8 +64,8 @@ public class Way {
     @Override
     public String toString() {
         return "Way{" +
-                "start=" + start +
-                ", end=" + end +
+                "start=" + start.getName() +
+                ", end=" + end.getName() +
                 ", type=" + type +
                 ", weight=" + weight +
                 '}';

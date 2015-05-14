@@ -3,7 +3,6 @@ package pl.edu.agh.miss.solver;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
 import pl.edu.agh.miss.path.Path;
-import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,11 +19,16 @@ public class MapSolverService implements ISolverService {
     private Map map;
     private Set<ISolver> solvers = new HashSet<ISolver>();
     private Set<Future<Path>> results = new HashSet<Future<Path>>();
-    private ExecutorService executor = Executors.newFixedThreadPool(5);
+    private ExecutorService executor;
 
-    public MapSolverService(Map map) {
+    public MapSolverService(Map map, Set<ISolver> solvers) {
+        this(map, solvers, solvers.size());
+    }
+
+    public MapSolverService(Map map, Set<ISolver> solvers, int executorsPoolSize) {
+        this.solvers = solvers;
         this.map = map;
-        solvers.add(new DijkstraSolver());
+        this.executor = Executors.newFixedThreadPool(executorsPoolSize);
     }
 
     @Override

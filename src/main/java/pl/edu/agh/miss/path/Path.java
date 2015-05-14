@@ -55,6 +55,7 @@ public class Path {
             sb.append(node.getName()).append(separator);
         }
         sb.replace(sb.length() - separator.length(), sb.length(), "");
+        sb.append(", totalCost=").append(totalCost);
         sb.append("}");
         return sb.toString();
     }
