@@ -1,9 +1,26 @@
 # Używanie bazy PostGIS
-Ogólnie jest dużo zabawy z zainstalowaniem tego wszystkiego. Trzeba zainstalować postgresql postgresql-contrib postgresql-pgrouting. 
 
-A potem wczytanie tego wg tutoriala http://www.bostongis.com/PrinterFriendly.aspx?content_name=loading_osm_postgis też nie jest proste. 
+## Instalacja:
 
-QGIS może posłużyć do przeglądania mapy w gui.
+```
+sudo apt-get install postgresql postgis postgresql-9.3-pgrouting osm2pgsql osm2pgrouting postgresql-contrib
+```
+
+1. Download a .osm file
+2. Connect to database.
+3. Create new database (osm_database)
+4. Create extensions: hstore pgrouting plpgsql postigs postgis_topology
+5. Download osm file (map.osm)
+6. run: osm2pgrouting -file map.osm -conf /usr/share/osm2pgrouting/mapconfig.xml -dbname osm_database -user postgres -passwd national -clean
+7. Database should be imported
+
+GUI:
+```
+sudo apt-get install qgis
+```
+
+Osm2po
+* http://osm2po.de/dld/osm2po-5.0.0.zip
 
 # OSM
 * https://wiki.openstreetmap.org/wiki/Develop
