@@ -14,8 +14,12 @@ public class JavaGIS {
             //Load the JDBC driver and establish a connection.
 
             Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://localhost:5432/osm_new";
-            conn = DriverManager.getConnection(url, "postgres", "national");
+            String pgsql_db = System.getenv("PGSQL_DB");
+            String pgsql_user = System.getenv("PGSQL_USER");
+            String url = "jdbc:postgresql://localhost:5432/" + pgsql_db;
+            String pgsql_password = System.getenv("PGSQL_PASSWORD");
+            System.out.println(url + " " + pgsql_user + " " + pgsql_password);
+            conn = DriverManager.getConnection(url, pgsql_user, pgsql_password);
 
             // Create a statement and execute a select query.
 
