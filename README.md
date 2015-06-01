@@ -11,7 +11,7 @@ sudo apt-get install postgresql postgis postgresql-9.3-pgrouting osm2pgsql osm2p
 3. Create new database (osm_database)
 4. Create extensions: hstore pgrouting plpgsql postigs postgis_topology
 5. Download osm file (map.osm)
-6. run: osm2pgrouting -file map.osm -conf /usr/share/osm2pgrouting/mapconfig.xml -dbname osm_database -user postgres -passwd national -clean
+6. run: osm2pgrouting -file map.osm -conf /usr/share/osm2pgrouting/mapconfig.xml -dbname osm_database -user postgres -passwd password -clean
 7. Database should be imported
 
 GUI:
