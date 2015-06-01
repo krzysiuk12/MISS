@@ -1,31 +1,35 @@
 package pl.edu.agh.miss.gis;
 
+import pl.edu.agh.miss.path.Path;
+
 import java.sql.*;
 
 public class JavaGIS {
 
-    public static void main(String[] args) {
-
+    public static Path getRoute(int nodeIdStart, int nodeIdEnd) {
         Connection conn;
-
+        Path p = null;
         try {
+            // use connection pooling
             conn = getConnection();
             Statement s = conn.createStatement();
-            String query = buildRouteQuery("pgr_dijkstra", 10, 9);
+            String query = buildRouteQuery("pgr_dijkstra", nodeIdStart, nodeIdEnd);
             ResultSet r = s.executeQuery(query);
-            processQuery(r);
+            p = processQuery(r);
             s.close();
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return p;
     }
 
-    private static void processQuery(ResultSet r) throws SQLException {
+    private static Path processQuery(ResultSet r) throws SQLException {
         while (r.next()) {
             float cost = r.getFloat("cost");
             System.out.println("Cost at " + cost);
         }
+        return null;
     }
 
     private static String buildRouteQuery(String algorithm, int nodeIdStart, int nodeIdEnd) {
