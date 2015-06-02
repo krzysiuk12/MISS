@@ -53,7 +53,7 @@ public class JavaGisDao {
         return path;
     }
 
-    private static String buildRouteQuery(String algorithm, int nodeIdStart, int nodeIdEnd) {
+    private static String buildRouteQuery(String algorithm, long nodeIdStart, long nodeIdEnd) {
         String newline = System.getProperty("line.separator");
         return "SELECT ways.x1, ways.y1, ways.x2, ways.y2, seq, id1 AS node, id2 AS edge, cost FROM " + algorithm + "('" + newline +
                 "SELECT gid AS id," + newline +
