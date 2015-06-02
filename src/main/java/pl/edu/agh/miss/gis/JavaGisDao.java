@@ -59,7 +59,7 @@ public class JavaGisDao {
                 "SELECT gid AS id," + newline +
                 "source::integer," + newline +
                 "target::integer," + newline +
-                "length::double precision AS cost" + newline +
+                "length::double length * ways.to_cost AS cost" + newline +
                 "FROM ways'," + newline +
                 nodeIdStart+", "+nodeIdEnd+", false, false) LEFT JOIN ways on (id1 = ways.gid)";
     }
