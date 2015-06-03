@@ -57,7 +57,7 @@ public class Simulation implements Callable<Path> {
 
             if (pathRecalculated == simulationTestCase.getPathRecalculationInterval()) {
                 solverService.findPath(currentPosition, simulationTestCase.getDestination());
-//                Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
+                Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
                 logger.info("Getting path...");
                 path = solverService.getPath();
             }
