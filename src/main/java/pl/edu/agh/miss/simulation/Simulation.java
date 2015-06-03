@@ -11,6 +11,7 @@ import pl.edu.agh.miss.solver.ISolver;
 import pl.edu.agh.miss.solver.ISolverService;
 import pl.edu.agh.miss.solver.MapSolverService;
 import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
+import pl.edu.agh.miss.solver.gis.PostgisSolver;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,10 +29,12 @@ public class Simulation implements Callable<Path> {
     private SimulationTestCase simulationTestCase;
     private Node currentPosition;
     private Path finalPath;
+    private ITrafficSimulation trafficSimulation;
 
-    public Simulation(SimulationTestCase simulationTestCase) {
+    public Simulation(SimulationTestCase simulationTestCase, ITrafficSimulation trafficSimulation) {
         this.simulationTestCase = simulationTestCase;
         this.finalPath = createPath();
+        this.trafficSimulation = trafficSimulation;
     }
 
     @Override
@@ -64,17 +67,13 @@ public class Simulation implements Callable<Path> {
                 logger.info("No accident happened.");
             }
 
-            logger.info("Simulate traffic...");
-            for(Way way : simulationTestCase.getMap().getWays()) {
-                WayWeight wayWeight = way.getWeight();
-                wayWeight.setWeight(wayWeight.getWeight() * (random.nextDouble(0.3) + 0.7));
-                logger.info("For way " + way + " new way weight " + wayWeight.getWeight());
-            }
+            trafficSimulation.simulateTraffic();
 
             logger.info("--------------------------------------------------------------------------------------------");
         }
         return finalPath;
     }
+
 
     private Set<ISolver> getSolvers() {
         Set<ISolver> solvers = new HashSet<ISolver>();
@@ -87,6 +86,8 @@ public class Simulation implements Callable<Path> {
     private ISolverService getSolverService() {
         if(simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION) {
             return new MapSolverService(simulationTestCase.getMap(), getSolvers());
+        } else if(simulationTestCase.getSimulationService() == SimulationService.POSTGIS) {
+            return new PostgisSolver();
         }
         return null;
     }

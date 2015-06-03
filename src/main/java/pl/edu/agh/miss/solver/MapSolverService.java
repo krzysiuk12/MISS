@@ -32,11 +32,12 @@ public class MapSolverService implements ISolverService {
     }
 
     @Override
-    public void findPath(Node startNode, Node endNode) {
+    public Path findPath(Node startNode, Node endNode) {
         for(ISolver solver : solvers) {
             Callable<Path> callableSolver = createCallableSolver(solver, startNode, endNode, map);
             results.add(executor.submit(callableSolver));
         }
+        return null;
     }
 
     @Override

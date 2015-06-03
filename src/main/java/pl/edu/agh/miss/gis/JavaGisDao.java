@@ -59,9 +59,9 @@ public class JavaGisDao {
                 "SELECT gid AS id," + newline +
                 "source::integer," + newline +
                 "target::integer," + newline +
-                "length::double length * ways.to_cost AS cost" + newline +
+                "length * ways.to_cost AS cost" + newline +
                 "FROM ways'," + newline +
-                nodeIdStart+", "+nodeIdEnd+", false, false) LEFT JOIN ways on (id1 = ways.gid)";
+                nodeIdStart+", "+nodeIdEnd+", false, false) LEFT JOIN ways on (id1 = ways.gid);";
     }
 
     private static Connection getConnection() throws ClassNotFoundException, SQLException {

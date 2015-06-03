@@ -46,4 +46,4 @@ FROM ways, classes c where class_id = c.id',
  19.9326939 | 50.0612428 | 19.9326801 | 50.0612439 |  13 |  943 |   -1 |                   0
 (14 rows)
 
-osm=# 
+osm=# select ST_X(the_geom), ST_Y(the_geom) from ways_vertices_pgr where id = 103;

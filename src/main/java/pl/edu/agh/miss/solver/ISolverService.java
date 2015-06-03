@@ -8,7 +8,7 @@ import pl.edu.agh.miss.path.Path;
  */
 public interface ISolverService {
 
-    public void findPath(Node startNode, Node endNode);
+    public Path findPath(Node startNode, Node endNode);
 
     public Path getPath() throws Exception;
 

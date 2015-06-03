@@ -11,10 +11,7 @@ import pl.edu.agh.miss.map.way.DistanceWeight;
 import pl.edu.agh.miss.map.way.Way;
 import pl.edu.agh.miss.map.way.WayType;
 import pl.edu.agh.miss.path.Path;
-import pl.edu.agh.miss.simulation.Simulation;
-import pl.edu.agh.miss.simulation.SimulationAlgorithm;
-import pl.edu.agh.miss.simulation.SimulationService;
-import pl.edu.agh.miss.simulation.SimulationTestCase;
+import pl.edu.agh.miss.simulation.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -52,7 +49,8 @@ public class SimulationTest {
     @Test
     public void simulationFirstTest() throws Exception {
         SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Redville"), map.getNodeByName("Purpleville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2);
-        Simulation simulation = new Simulation(simulationTestCase);
+        TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
+        Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
         logger.info("Final path: " + path);
     }
@@ -78,7 +76,8 @@ public class SimulationTest {
         Map map = new Map("Test Map One", nodes, ways);
 
         SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2);
-        Simulation simulation = new Simulation(simulationTestCase);
+        TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
+        Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
         logger.info("Final path: " + path);
     }
