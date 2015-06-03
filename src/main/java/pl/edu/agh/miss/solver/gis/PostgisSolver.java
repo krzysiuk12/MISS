@@ -34,6 +34,7 @@ public class PostgisSolver implements ISolver, ISolverService {
 
     @Override
     public void updateWeight(Way nextWay) {
-        nextWay.setWeight(new WayWeight(nextWay.getWeight().getWeight() * JavaGisDao.getCost(nextWay.getStart().getOsmId())));
+        final double weight = nextWay.getWeight().getWeight() * JavaGisDao.getCost(nextWay.getOsmId());
+        nextWay.getWeight().setWeight(weight);
     }
 }

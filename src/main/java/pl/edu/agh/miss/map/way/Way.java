@@ -7,6 +7,7 @@ import pl.edu.agh.miss.map.Node;
  */
 public class Way {
 
+    private long osmId = 0L;
     private Node start;
     private Node end;
     private WayType type;
@@ -20,6 +21,22 @@ public class Way {
         this.end = end;
         this.type = type;
         this.weight = weight;
+    }
+
+    public Way(Node start, Node end, WayType type, WayWeight weight, Long osmId) {
+        this.start = start;
+        this.end = end;
+        this.type = type;
+        this.weight = weight;
+        this.osmId = osmId;
+    }
+
+    public long getOsmId() {
+        return osmId;
+    }
+
+    public void setOsmId(long osmId) {
+        this.osmId = osmId;
     }
 
     public Node getStart() {

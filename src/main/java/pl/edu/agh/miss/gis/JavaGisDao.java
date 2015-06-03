@@ -97,7 +97,7 @@ public class JavaGisDao {
             nodes.add(fromNode);
             final Node toNode = new Node(r.getLong("node"), r.getDouble("y2"), r.getDouble("x2"));
             nodes.add(toNode);
-            ways.add(new Way(fromNode, toNode, WayType.TWO_WAY, new WayWeight(cost)));
+            ways.add(new Way(fromNode, toNode, WayType.TWO_WAY, new WayWeight(cost), r.getLong("edge")));
         }
 
         Path path = new Path(nodes, ways, totalCost);

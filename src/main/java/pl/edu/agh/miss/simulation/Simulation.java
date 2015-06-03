@@ -45,19 +45,21 @@ public class Simulation implements Callable<Path> {
         finalPath.getNodes().add(currentPosition);
 
         Path path = null;
-        while(!currentPosition.equals(simulationTestCase.getDestination())) {
+        while (!currentPosition.equals(simulationTestCase.getDestination())) {
             ISolverService solverService = getSolverService();
             logger.info("Current position: " + currentPosition);
             logger.info("Solver created...");
             logger.info("Finding path from " + currentPosition + " to " + simulationTestCase.getDestination());
 
-            if(pathRecalculated == simulationTestCase.getPathRecalculationInterval()) {
+            if (pathRecalculated <= 0) {
+                pathRecalculated = simulationTestCase.getPathRecalculationInterval();
+            }
+
+            if (pathRecalculated == simulationTestCase.getPathRecalculationInterval()) {
                 solverService.findPath(currentPosition, simulationTestCase.getDestination());
-                Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
+//                Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
                 logger.info("Getting path...");
                 path = solverService.getPath();
-            } else if(pathRecalculated == 0) {
-                pathRecalculated = simulationTestCase.getPathRecalculationInterval();
             }
             pathRecalculated--;
 
@@ -80,16 +82,16 @@ public class Simulation implements Callable<Path> {
 
     private Set<ISolver> getSolvers() {
         Set<ISolver> solvers = new HashSet<ISolver>();
-        if(simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION && simulationTestCase.getAlgorithm() == SimulationAlgorithm.DIJKSTRA) {
+        if (simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION && simulationTestCase.getAlgorithm() == SimulationAlgorithm.DIJKSTRA) {
             solvers.add(new DijkstraSolver());
         }
         return solvers;
     }
 
     private ISolverService getSolverService() {
-        if(simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION) {
+        if (simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION) {
             return new MapSolverService(simulationTestCase.getMap(), getSolvers());
-        } else if(simulationTestCase.getSimulationService() == SimulationService.POSTGIS) {
+        } else if (simulationTestCase.getSimulationService() == SimulationService.POSTGIS) {
             return new PostgisSolver();
         }
         return null;

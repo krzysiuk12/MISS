@@ -37,7 +37,6 @@ public class SimulationTestGis {
     @Parameterized.Parameters
     public static Collection recalculationIntervals() {
         return Arrays.asList(
-                0,
                 1,
                 2,
                 3,
@@ -58,6 +57,6 @@ public class SimulationTestGis {
         TrafficSimulationGis trafficSimulation = new TrafficSimulationGis();
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
-        System.out.println(pathRecalculationInterval + " " + path);
+        System.out.println(pathRecalculationInterval + " " + path.getTotalCost());
     }
 }

@@ -13,10 +13,10 @@ public class TrafficSimulationGis implements ITrafficSimulation {
     List<Long> roadsToSimulateAccident = new ArrayList<>();
 
     public TrafficSimulationGis() {
-        roadsToSimulateAccident.add(2225L);
         roadsToSimulateAccident.add(1699L);
+        roadsToSimulateAccident.add(1701L);
         roadsToSimulateAccident.add(1684L);
-        roadsToSimulateAccident.add(1340L);
+        roadsToSimulateAccident.add(1687L);
 
         for(Long gid : roadsToSimulateAccident) {
             JavaGisDao.setCost(gid, 1.0);
@@ -63,14 +63,15 @@ public class TrafficSimulationGis implements ITrafficSimulation {
     }
 
     public void processIteration() {
-        if (iteration == 1) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(0), 10000.0);
+        final double cost = 50.0;
+        if (iteration == 0) {
+            JavaGisDao.setCost(roadsToSimulateAccident.get(0), cost);
         } else if(iteration == 2) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(1), 10000.0);
-        }else if(iteration == 3) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(2), 10000.0);
-        }else if(iteration == 4) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(3), 10000.0);
+            JavaGisDao.setCost(roadsToSimulateAccident.get(1), cost);
+        }else if(iteration == 6) {
+            JavaGisDao.setCost(roadsToSimulateAccident.get(2), cost);
+        }else if(iteration == 10) {
+            JavaGisDao.setCost(roadsToSimulateAccident.get(3), cost);
         }
         iteration++;
     }
