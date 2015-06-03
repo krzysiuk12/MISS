@@ -13,7 +13,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class JavaGisDao {
-
+    static String newline = System.getProperty("line.separator");
     public static void main(String[] args) {
         Path p = getRoute(10, 9);
     }
@@ -35,6 +35,22 @@ public class JavaGisDao {
             e.printStackTrace();
         }
         return p;
+    }
+
+    public static void setCost(Long gid, double cost) {
+        Connection conn;
+        Path p = null;
+        try {
+            // use connection pooling
+            conn = getConnection();
+            Statement s = conn.createStatement();
+            String query = buildCostQuery(gid, cost);
+            s.executeUpdate(query);
+            s.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void filterQuery(long nodeIdStart, long nodeIdEnd, Path p) {
@@ -66,7 +82,6 @@ public class JavaGisDao {
     }
 
     private static String buildRouteQuery(String algorithm, long nodeIdStart, long nodeIdEnd) {
-        String newline = System.getProperty("line.separator");
         return "SELECT ways.x1, ways.y1, ways.x2, ways.y2, seq, id1 AS node, id2 AS edge, cost FROM " + algorithm + "('" + newline +
                 "SELECT gid AS id," + newline +
                 "source::integer," + newline +
@@ -74,6 +89,10 @@ public class JavaGisDao {
                 "length * ways.to_cost AS cost" + newline +
                 "FROM ways'," + newline +
                 nodeIdStart+", "+nodeIdEnd+", false, false) LEFT JOIN ways on (id1 = ways.gid);";
+    }
+
+    private static String buildCostQuery(Long gid, double cost) {
+        return "update ways set to_cost = " + cost + " where gid = " + gid + ";";
     }
 
     private static Connection getConnection() throws ClassNotFoundException, SQLException {

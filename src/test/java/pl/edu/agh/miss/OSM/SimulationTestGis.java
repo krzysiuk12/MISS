@@ -43,5 +43,4 @@ public class SimulationTestGis {
         Path path = simulation.call();
         logger.info("Final path: " + path);
     }
-
 }
