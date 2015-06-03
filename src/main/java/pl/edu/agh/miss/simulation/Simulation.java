@@ -30,7 +30,7 @@ public class Simulation implements Callable<Path> {
     private Node currentPosition;
     private Path finalPath;
     private ITrafficSimulation trafficSimulation;
-    int pathRecalculated;
+    int pathRecalculated = 0;
 
     public Simulation(SimulationTestCase simulationTestCase, ITrafficSimulation trafficSimulation) {
         this.simulationTestCase = simulationTestCase;
@@ -44,19 +44,27 @@ public class Simulation implements Callable<Path> {
         currentPosition = simulationTestCase.getSource();
         finalPath.getNodes().add(currentPosition);
 
+        Path path = null;
         while(!currentPosition.equals(simulationTestCase.getDestination())) {
             ISolverService solverService = getSolverService();
             logger.info("Current position: " + currentPosition);
             logger.info("Solver created...");
             logger.info("Finding path from " + currentPosition + " to " + simulationTestCase.getDestination());
 
-            solverService.findPath(currentPosition, simulationTestCase.getDestination());
-            Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
-            logger.info("Getting path...");
+            if(pathRecalculated == simulationTestCase.getPathRecalculationInterval()) {
+                solverService.findPath(currentPosition, simulationTestCase.getDestination());
+                Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
+                logger.info("Getting path...");
+                path = solverService.getPath();
+            } else if(pathRecalculated == 0) {
+                pathRecalculated = simulationTestCase.getPathRecalculationInterval();
+            }
+            pathRecalculated--;
 
-            Path path = solverService.getPath();
             // FIXME: THIS THROWS NULL POINTER EXCEPTION WHEN THERE ARE NO RESULTS
             Way nextWay = path.getWays().get(0);
+            solverService.updateWeight(nextWay);
+            path.getWays().remove(0);
             currentPosition = nextWay.getDestination(currentPosition);
             addWayToPath(nextWay);
             logger.info("Next way: " + nextWay);

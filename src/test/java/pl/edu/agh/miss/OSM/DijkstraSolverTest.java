@@ -80,7 +80,7 @@ public class DijkstraSolverTest {
         Path path = dijkstraSolver.findPath(start, end, map);
         assertEquals(path.getNodes().size(), 4);
         assertEquals(path.getWays().size(), 3);
-        assertEquals(path.getTotalCost(), 12.0, 0.0001);
+        assertEquals(path.getTotalCost(), 9.0, 0.0001);
         assertTrue(path.getNodes().contains(map.getNodeByName("Greenville")));
         assertTrue(path.getNodes().contains(map.getNodeByName("Blueville")));
         assertTrue(path.getNodes().contains(map.getNodeByName("Purpleville")));
@@ -94,7 +94,7 @@ public class DijkstraSolverTest {
         Path path = dijkstraSolver.findPath(start, end, map);
         assertEquals(path.getNodes().size(), 2);
         assertEquals(path.getWays().size(), 1);
-        assertEquals(path.getTotalCost(), 7.0, 0.0001);
+        assertEquals(path.getTotalCost(), 10.0, 0.0001);
         assertTrue(path.getNodes().contains(map.getNodeByName("Blueville")));
         assertTrue(path.getNodes().contains(map.getNodeByName("Purpleville")));
     }

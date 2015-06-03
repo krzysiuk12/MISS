@@ -2,6 +2,7 @@ package pl.edu.agh.miss.solver;
 
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
+import pl.edu.agh.miss.map.way.Way;
 import pl.edu.agh.miss.path.Path;
 
 import java.util.HashSet;
@@ -48,6 +49,11 @@ public class MapSolverService implements ISolverService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void updateWeight(Way nextWay) {
+
     }
 
     private Callable<Path> createCallableSolver(final ISolver solver, final Node start, final Node end, final Map map) {

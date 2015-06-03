@@ -1,10 +1,13 @@
 package pl.edu.agh.miss.gis;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pl.edu.agh.miss.map.Node;
 import pl.edu.agh.miss.map.way.Way;
 import pl.edu.agh.miss.map.way.WayType;
 import pl.edu.agh.miss.map.way.WayWeight;
 import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.simulation.Simulation;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,6 +17,8 @@ import java.util.stream.Collectors;
 
 public class JavaGisDao {
     static String newline = System.getProperty("line.separator");
+    private static Logger logger = LogManager.getLogger(Simulation.class.getSimpleName());
+
     public static void main(String[] args) {
         Path p = getRoute(10, 9);
     }
@@ -39,7 +44,6 @@ public class JavaGisDao {
 
     public static void setCost(Long gid, double cost) {
         Connection conn;
-        Path p = null;
         try {
             // use connection pooling
             conn = getConnection();
@@ -53,6 +57,25 @@ public class JavaGisDao {
         }
     }
 
+    public static double getCost(Long gid) {
+        Connection conn;
+        double cost = 0.0;
+        try {
+            // use connection pooling
+            conn = getConnection();
+            Statement s = conn.createStatement();
+            String query = "SELECT to_cost::float FROM ways WHERE gid = " + gid + ";";
+            final ResultSet resultSet = s.executeQuery(query);
+            resultSet.next();
+            cost = resultSet.getDouble("to_cost");
+            s.close();
+            conn.close();
+        } catch (Exception e) {
+            // no cost defined
+        }
+
+        return cost;
+    }
     public static void filterQuery(long nodeIdStart, long nodeIdEnd, Path p) {
         p.setNodes(p.getNodes().stream().filter(node -> {
             return node.getOsmId() != nodeIdStart;
@@ -102,7 +125,7 @@ public class JavaGisDao {
         String pgsql_user = System.getenv("PGSQL_USER");
         String url = "jdbc:postgresql://localhost:5432/" + pgsql_db;
         String pgsql_password = System.getenv("PGSQL_PASSWORD");
-        System.out.println(url + " " + pgsql_user + " " + pgsql_password);
+        logger.info(url + " " + pgsql_user + " " + pgsql_password);
         conn = DriverManager.getConnection(url, pgsql_user, pgsql_password);
         return conn;
     }

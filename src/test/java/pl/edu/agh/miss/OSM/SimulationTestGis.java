@@ -4,35 +4,60 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import pl.edu.agh.miss.gis.TrafficSimulationGis;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
 import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.simulation.*;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+
 /**
  * Created by Krzysztof Kicinger on 2015-05-14.
  */
+@RunWith(Parameterized.class)
 public class SimulationTestGis {
 
     private static Map map;
     private static Node startNode;
     private static Node endNode;
     private Logger logger = LogManager.getLogger(SimulationTestGis.class.getName());
+    int pathRecalculationInterval = 10;
+
+    public SimulationTestGis(int pathRecalculationInterval) {
+        this.pathRecalculationInterval = pathRecalculationInterval;
+    }
+    @Parameterized.Parameters
+    public static Collection recalculationIntervals() {
+        return Arrays.asList(
+                0,
+                1,
+                2,
+                3,
+                4
+        );
+    }
 
     @BeforeClass
     public static void beforeClass() {
         startNode = new Node(103, 50.0619085, 19.9324703);
-        endNode = new Node(943, 50.0612428, 19.9326939);
+        endNode = new Node(958, 50.0613054, 19.9323855);
         map = new Map("Test Map One", null, null);
     }
 
     @Test
     public void simulationFirstTest() throws Exception {
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 10);
+        SimulationTestCase simulationTestCase = new SimulationTestCase(map, startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
         TrafficSimulationGis trafficSimulation = new TrafficSimulationGis();
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
-        logger.info("Final path: " + path);
+        System.out.println(pathRecalculationInterval + " " + path);
     }
 }

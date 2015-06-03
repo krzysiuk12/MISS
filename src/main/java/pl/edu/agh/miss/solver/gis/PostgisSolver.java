@@ -3,6 +3,8 @@ package pl.edu.agh.miss.solver.gis;
 import pl.edu.agh.miss.gis.JavaGisDao;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
+import pl.edu.agh.miss.map.way.Way;
+import pl.edu.agh.miss.map.way.WayWeight;
 import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.solver.ISolver;
 import pl.edu.agh.miss.solver.ISolverService;
@@ -28,5 +30,10 @@ public class PostgisSolver implements ISolver, ISolverService {
     @Override
     public Path getPath() throws Exception {
         return foundPath;
+    }
+
+    @Override
+    public void updateWeight(Way nextWay) {
+        nextWay.setWeight(new WayWeight(nextWay.getWeight().getWeight() * JavaGisDao.getCost(nextWay.getStart().getOsmId())));
     }
 }

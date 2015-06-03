@@ -1,6 +1,7 @@
 package pl.edu.agh.miss.solver;
 
 import pl.edu.agh.miss.map.Node;
+import pl.edu.agh.miss.map.way.Way;
 import pl.edu.agh.miss.path.Path;
 
 /**
@@ -12,6 +13,5 @@ public interface ISolverService {
 
     public Path getPath() throws Exception;
 
-
-
+    void updateWeight(Way nextWay);
 }
