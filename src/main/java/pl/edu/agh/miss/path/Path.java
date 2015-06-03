@@ -52,7 +52,7 @@ public class Path {
         final String separator = " -> ";
         final StringBuffer sb = new StringBuffer("Path{");
         for(Node node : nodes) {
-            sb.append(node.getOsmId()).append(separator);
+            sb.append(node.getName()).append(separator);
         }
         sb.replace(sb.length() - separator.length(), sb.length(), "");
         sb.append(", totalCost=").append(totalCost);

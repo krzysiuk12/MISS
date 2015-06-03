@@ -3,7 +3,10 @@ package pl.edu.agh.miss.OSM;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
 import pl.edu.agh.miss.map.way.DistanceUnit;
@@ -14,14 +17,21 @@ import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.simulation.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Created by Krzysztof Kicinger on 2015-05-14.
  */
+@RunWith(Parameterized.class)
 public class SimulationTest {
 
+    private int pathRecalculationInterval = 0;
+
+    public SimulationTest(int pathRecalculationInterval) {
+        this.pathRecalculationInterval = pathRecalculationInterval;
+    }
     private static Map map;
     private Logger logger = LogManager.getLogger(SimulationTest.class.getName());
 
@@ -46,15 +56,15 @@ public class SimulationTest {
         map = new Map("Test Map One", nodes, ways);
     }
 
-    @Test
-    public void simulationFirstTest() throws Exception {
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Redville"), map.getNodeByName("Purpleville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 0);
-        TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
-        Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
-        Path path = simulation.call();
-        logger.info("Final path: " + path);
+    @Parameterized.Parameters
+    public static Collection recalculationIntervals() {
+        return Arrays.asList(
+                1,
+                2,
+                3,
+                4
+        );
     }
-
     @Test
     public void simulationSecondTest() throws Exception {
         Node redville = new Node("Redville", 1.0, 1.0);
@@ -75,11 +85,11 @@ public class SimulationTest {
 
         Map map = new Map("Test Map One", nodes, ways);
 
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 0);
+        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
         TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
-        logger.info("Final path: " + path);
+        System.out.println(pathRecalculationInterval + " " + path);
     }
 
 
