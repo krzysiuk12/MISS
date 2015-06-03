@@ -57,6 +57,6 @@ public class SimulationTestGis {
         TrafficSimulationGis trafficSimulation = new TrafficSimulationGis();
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
-        System.out.println(pathRecalculationInterval + " " + path.getTotalCost());
+        System.out.println(pathRecalculationInterval + " " + path);
     }
 }

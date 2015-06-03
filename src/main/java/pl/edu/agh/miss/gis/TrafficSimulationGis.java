@@ -67,11 +67,11 @@ public class TrafficSimulationGis implements ITrafficSimulation {
         if (iteration == 0) {
             JavaGisDao.setCost(roadsToSimulateAccident.get(0), cost);
         } else if(iteration == 2) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(1), cost);
+            JavaGisDao.setCost(roadsToSimulateAccident.get(1), cost*2);
         }else if(iteration == 6) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(2), cost);
+            JavaGisDao.setCost(roadsToSimulateAccident.get(2), cost/3);
         }else if(iteration == 10) {
-            JavaGisDao.setCost(roadsToSimulateAccident.get(3), cost);
+            JavaGisDao.setCost(roadsToSimulateAccident.get(3), cost*10);
         }
         iteration++;
     }
