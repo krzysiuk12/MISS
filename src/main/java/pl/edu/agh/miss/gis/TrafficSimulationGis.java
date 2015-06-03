@@ -10,4 +10,9 @@ public class TrafficSimulationGis implements ITrafficSimulation{
     public void simulateTraffic() {
 
     }
+
+    @Override
+    public void simulateAccident() {
+
+    }
 }

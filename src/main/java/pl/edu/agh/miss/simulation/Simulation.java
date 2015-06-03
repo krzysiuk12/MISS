@@ -52,22 +52,14 @@ public class Simulation implements Callable<Path> {
             logger.info("Getting path...");
 
             Path path = solverService.getPath();
+            // FIXME: THIS THROWS NULL POINTER EXCEPTION WHEN THERE ARE NO RESULTS
             Way nextWay = path.getWays().get(0);
             currentPosition = nextWay.getDestination(currentPosition);
             addWayToPath(nextWay);
             logger.info("Next way: " + nextWay);
 
-            logger.info("Simulate accident...");
-            if(Double.compare(random.nextDouble(), simulationTestCase.getAccidentProbability()) <= 0) {
-                Map map = simulationTestCase.getMap();
-                Way unavailableWay = new ArrayList<>(map.getWays()).get(random.nextInt(map.getWays().size()));
-                logger.info("Accident happened on way: " + unavailableWay);
-                map.getWays().remove(unavailableWay);
-            } else {
-                logger.info("No accident happened.");
-            }
-
             trafficSimulation.simulateTraffic();
+            trafficSimulation.simulateAccident();
 
             logger.info("--------------------------------------------------------------------------------------------");
         }

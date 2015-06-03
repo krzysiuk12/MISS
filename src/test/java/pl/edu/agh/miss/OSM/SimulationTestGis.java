@@ -31,7 +31,7 @@ public class SimulationTestGis {
     @BeforeClass
     public static void beforeClass() {
         startNode = new Node(103, 50.0619085, 19.9324703);
-        endNode = new Node(943, 50.0619085, 19.9373521);
+        endNode = new Node(943, 50.0612428, 19.9326939);
         map = new Map("Test Map One", null, null);
     }
 

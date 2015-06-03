@@ -5,4 +5,6 @@ package pl.edu.agh.miss.simulation;
  */
 public interface ITrafficSimulation {
     public void simulateTraffic();
+
+    void simulateAccident();
 }

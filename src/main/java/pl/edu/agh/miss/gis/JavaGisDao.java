@@ -9,6 +9,8 @@ import pl.edu.agh.miss.path.Path;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class JavaGisDao {
 
@@ -26,12 +28,22 @@ public class JavaGisDao {
             String query = buildRouteQuery("pgr_dijkstra", nodeIdStart, nodeIdEnd);
             ResultSet r = s.executeQuery(query);
             p = processQuery(r);
+            filterQuery(nodeIdStart, nodeIdEnd, p);
             s.close();
             conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return p;
+    }
+
+    public static void filterQuery(long nodeIdStart, long nodeIdEnd, Path p) {
+        p.setNodes(p.getNodes().stream().filter(node -> {
+            return node.getOsmId() != nodeIdStart;
+        }).collect(Collectors.toList()));
+        p.setWays(p.getWays().stream().filter(way -> {
+            return way.getStart().getOsmId() != nodeIdStart;
+        }).collect(Collectors.toList()));
     }
 
     private static Path processQuery(ResultSet r) throws SQLException {
