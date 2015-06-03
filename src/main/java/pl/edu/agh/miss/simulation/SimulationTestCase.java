@@ -15,8 +15,9 @@ public class SimulationTestCase {
     private final SimulationAlgorithm algorithm;
     private final double accidentProbability;
     private final int timePeriodInSeconds;
+    private final int pathRecalculationInterval;
 
-    public SimulationTestCase(Map map, Node source, Node destination, SimulationService simulationService, SimulationAlgorithm algorithm, double accidentProbability, int timePeriodInSeconds) {
+    public SimulationTestCase(Map map, Node source, Node destination, SimulationService simulationService, SimulationAlgorithm algorithm, double accidentProbability, int timePeriodInSeconds, int pathRecalculationInterval) {
         this.map = map;
         this.source = source;
         this.destination = destination;
@@ -24,6 +25,11 @@ public class SimulationTestCase {
         this.algorithm = algorithm;
         this.accidentProbability = accidentProbability;
         this.timePeriodInSeconds = timePeriodInSeconds;
+        this.pathRecalculationInterval = pathRecalculationInterval;
+    }
+
+    public int getPathRecalculationInterval() {
+        return pathRecalculationInterval;
     }
 
     public Map getMap() {

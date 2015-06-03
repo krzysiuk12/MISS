@@ -7,16 +7,8 @@ import org.junit.Test;
 import pl.edu.agh.miss.gis.TrafficSimulationGis;
 import pl.edu.agh.miss.map.Map;
 import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.DistanceUnit;
-import pl.edu.agh.miss.map.way.DistanceWeight;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayType;
 import pl.edu.agh.miss.path.Path;
 import pl.edu.agh.miss.simulation.*;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Krzysztof Kicinger on 2015-05-14.
@@ -37,7 +29,7 @@ public class SimulationTestGis {
 
     @Test
     public void simulationFirstTest() throws Exception {
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2);
+        SimulationTestCase simulationTestCase = new SimulationTestCase(map, startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 10);
         TrafficSimulationGis trafficSimulation = new TrafficSimulationGis();
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();

@@ -30,11 +30,13 @@ public class Simulation implements Callable<Path> {
     private Node currentPosition;
     private Path finalPath;
     private ITrafficSimulation trafficSimulation;
+    int pathRecalculated;
 
     public Simulation(SimulationTestCase simulationTestCase, ITrafficSimulation trafficSimulation) {
         this.simulationTestCase = simulationTestCase;
         this.finalPath = createPath();
         this.trafficSimulation = trafficSimulation;
+        pathRecalculated = simulationTestCase.getPathRecalculationInterval();
     }
 
     @Override
@@ -43,10 +45,11 @@ public class Simulation implements Callable<Path> {
         finalPath.getNodes().add(currentPosition);
 
         while(!currentPosition.equals(simulationTestCase.getDestination())) {
-            logger.info("Current position: " + currentPosition);
             ISolverService solverService = getSolverService();
+            logger.info("Current position: " + currentPosition);
             logger.info("Solver created...");
             logger.info("Finding path from " + currentPosition + " to " + simulationTestCase.getDestination());
+
             solverService.findPath(currentPosition, simulationTestCase.getDestination());
             Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
             logger.info("Getting path...");

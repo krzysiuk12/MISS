@@ -48,7 +48,7 @@ public class SimulationTest {
 
     @Test
     public void simulationFirstTest() throws Exception {
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Redville"), map.getNodeByName("Purpleville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2);
+        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Redville"), map.getNodeByName("Purpleville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 0);
         TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
@@ -75,7 +75,7 @@ public class SimulationTest {
 
         Map map = new Map("Test Map One", nodes, ways);
 
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2);
+        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, 0);
         TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
