@@ -3,18 +3,19 @@ package pl.edu.agh.miss.OSM;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.DistanceUnit;
-import pl.edu.agh.miss.map.way.DistanceWeight;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayType;
-import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.domain.Map;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.DistanceUnit;
+import pl.edu.agh.miss.domain.way.DistanceWeight;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.way.WayType;
+import pl.edu.agh.miss.domain.Path;
 import pl.edu.agh.miss.simulation.*;
+import pl.edu.agh.miss.simulation.testCases.MapSimulationTestCase;
+import pl.edu.agh.miss.simulation.testCases.SimulationTestCase;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -85,7 +86,7 @@ public class SimulationTest {
 
         Map map = new Map("Test Map One", nodes, ways);
 
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
+        SimulationTestCase simulationTestCase = new MapSimulationTestCase(map, map.getNodeByName("Orangeville"), map.getNodeByName("Greenville"), SimulationService.IMPLEMENTATION, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
         TrafficSimulation trafficSimulation = new TrafficSimulation(simulationTestCase);
         Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();

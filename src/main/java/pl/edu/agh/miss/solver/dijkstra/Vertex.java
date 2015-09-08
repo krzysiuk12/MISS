@@ -1,6 +1,6 @@
 package pl.edu.agh.miss.solver.dijkstra;
 
-import pl.edu.agh.miss.map.Node;
+import pl.edu.agh.miss.domain.Node;
 
 /**
  * Created by Krzysztof Kicinger on 2015-05-13.

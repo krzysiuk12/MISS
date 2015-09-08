@@ -1,12 +1,12 @@
 package pl.edu.agh.miss.OSM;
 
 import org.junit.Test;
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.DistanceUnit;
-import pl.edu.agh.miss.map.way.DistanceWeight;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayType;
+import pl.edu.agh.miss.domain.Map;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.DistanceUnit;
+import pl.edu.agh.miss.domain.way.DistanceWeight;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.way.WayType;
 
 import java.util.Arrays;
 import java.util.HashSet;

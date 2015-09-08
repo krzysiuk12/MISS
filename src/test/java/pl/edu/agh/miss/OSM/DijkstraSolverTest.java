@@ -2,13 +2,13 @@ package pl.edu.agh.miss.OSM;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.DistanceUnit;
-import pl.edu.agh.miss.map.way.DistanceWeight;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayType;
-import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.domain.Map;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.DistanceUnit;
+import pl.edu.agh.miss.domain.way.DistanceWeight;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.way.WayType;
+import pl.edu.agh.miss.domain.Path;
 import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
 
 import java.util.Arrays;
@@ -44,14 +44,14 @@ public class DijkstraSolverTest {
         Set<Way> ways = new HashSet<Way>(Arrays.asList(redvilleToOrangeville, purplevilleToOrangeville, bluevilleToGreenville, bluevilleToPurpleville, bluevilleToRedville, redvilleToGreenville));
 
         map = new Map("Test Map One", nodes, ways);
-        dijkstraSolver = new DijkstraSolver();
+        dijkstraSolver = new DijkstraSolver(map);
     }
 
     @Test
     public void testDijkstraSolverFirstTestCase() {
         Node start = map.getNodeByName("Redville");
         Node end = map.getNodeByName("Purpleville");
-        Path path = dijkstraSolver.findPath(start, end, map);
+        Path path = dijkstraSolver.findPath(start, end);
         assertEquals(path.getNodes().size(), 3);
         assertEquals(path.getWays().size(), 2);
         assertEquals(path.getTotalCost(), 10.0, 0.0001);
@@ -64,7 +64,7 @@ public class DijkstraSolverTest {
     public void testDijkstraSolverSecondTestCase() {
         Node start = map.getNodeByName("Blueville");
         Node end = map.getNodeByName("Orangeville");
-        Path path = dijkstraSolver.findPath(start, end, map);
+        Path path = dijkstraSolver.findPath(start, end);
         assertEquals(path.getNodes().size(), 3);
         assertEquals(path.getWays().size(), 2);
         assertEquals(path.getTotalCost(), 9.0, 0.0001);
@@ -77,7 +77,7 @@ public class DijkstraSolverTest {
     public void testDijkstraSolverThirdTestCase() {
         Node start = map.getNodeByName("Greenville");
         Node end = map.getNodeByName("Orangeville");
-        Path path = dijkstraSolver.findPath(start, end, map);
+        Path path = dijkstraSolver.findPath(start, end);
         assertEquals(path.getNodes().size(), 4);
         assertEquals(path.getWays().size(), 3);
         assertEquals(path.getTotalCost(), 9.0, 0.0001);
@@ -91,7 +91,7 @@ public class DijkstraSolverTest {
     public void testDijkstraSolverFourthTestCase() {
         Node start = map.getNodeByName("Blueville");
         Node end = map.getNodeByName("Purpleville");
-        Path path = dijkstraSolver.findPath(start, end, map);
+        Path path = dijkstraSolver.findPath(start, end);
         assertEquals(path.getNodes().size(), 2);
         assertEquals(path.getWays().size(), 1);
         assertEquals(path.getTotalCost(), 10.0, 0.0001);
@@ -103,7 +103,7 @@ public class DijkstraSolverTest {
     public void testDijkstraSolverFifthTestCase() {
         Node start = map.getNodeByName("Blueville");
         Node end = map.getNodeByName("Blueville");
-        Path path = dijkstraSolver.findPath(start, end, map);
+        Path path = dijkstraSolver.findPath(start, end);
         assertEquals(path.getNodes().size(), 1);
         assertEquals(path.getWays().size(), 0);
         assertEquals(path.getTotalCost(), 0.0, 0.0001);

@@ -2,109 +2,121 @@ package pl.edu.agh.miss.gis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayType;
-import pl.edu.agh.miss.map.way.WayWeight;
-import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.config.PropertyKeys;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.way.WayType;
+import pl.edu.agh.miss.domain.way.WayWeight;
+import pl.edu.agh.miss.domain.Path;
 import pl.edu.agh.miss.simulation.Simulation;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class JavaGisDao {
-    static String newline = System.getProperty("line.separator");
-    private static Logger logger = LogManager.getLogger(Simulation.class.getSimpleName());
 
-    public static void main(String[] args) {
-        Path p = getRoute(10, 9);
+    private static Logger logger = LogManager.getLogger(Simulation.class.getSimpleName());
+    private static String newline = System.getProperty("line.separator");
+    private static JavaGisDao INSTANCE = null;
+    private static Connection connection;
+    private static String dbname;
+    private static String username;
+    private static String password;
+
+    private JavaGisDao(String dbname, String username, String password) {
+        this.dbname = dbname;
+        this.username = username;
+        this.password = password;
     }
 
-    public static Path getRoute(long nodeIdStart, long nodeIdEnd) {
-        Connection conn;
-        Path p = null;
-        try {
-            // use connection pooling
-            conn = getConnection();
-            Statement s = conn.createStatement();
-            String query = buildRouteQuery("pgr_dijkstra", nodeIdStart, nodeIdEnd);
-            ResultSet r = s.executeQuery(query);
-            p = processQuery(r);
-            filterQuery(nodeIdStart, nodeIdEnd, p);
-            s.close();
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public static JavaGisDao getInstance(String dbName, String username, String password) throws Exception {
+        if(INSTANCE == null) {
+            synchronized (JavaGisDao.class) {
+                if(INSTANCE == null) {
+                    INSTANCE = new JavaGisDao(dbName, username, password);
+                    INSTANCE.getConnection();
+                }
+            }
         }
-        return p;
+        return INSTANCE;
     }
 
     public static void setCost(Long gid, double cost) {
-        Connection conn;
-        try {
-            // use connection pooling
-            conn = getConnection();
-            Statement s = conn.createStatement();
-            String query = buildCostQuery(gid, cost);
-            s.executeUpdate(query);
-            s.close();
-            conn.close();
+        try(Statement s = getConnection().createStatement()) {
+            s.executeUpdate("UPDATE ways SET to_cost = " + cost + " WHERE GID = " + gid + ";");
+            // refreshConnection();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+
+    public static void refreshWays() {
+        try(Statement s = getConnection().createStatement()) {
+            s.executeUpdate("UPDATE ways SET to_cost=wd.to_cost, length=wd.length FROM (SELECT gid, to_cost, length FROM ways_def) AS wd WHERE ways.gid = wd.gid;");
+            // refreshConnection();
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     public static double getCost(Long gid) {
-        Connection conn;
-        double cost = 0.0;
-        try {
-            // use connection pooling
-            conn = getConnection();
-            Statement s = conn.createStatement();
-            String query = "SELECT to_cost::float FROM ways WHERE gid = " + gid + ";";
-            final ResultSet resultSet = s.executeQuery(query);
+        try(Statement s = getConnection().createStatement()) {
+            final ResultSet resultSet = s.executeQuery("SELECT length, to_cost::float FROM ways WHERE gid = " + gid + ";");
             resultSet.next();
-            cost = resultSet.getDouble("to_cost");
-            s.close();
-            conn.close();
+            return resultSet.getDouble("to_cost");
         } catch (Exception e) {
-            // no cost defined
+            System.out.println(e);
         }
-
-        return cost;
-    }
-    public static void filterQuery(long nodeIdStart, long nodeIdEnd, Path p) {
-        p.setNodes(p.getNodes().stream().filter(node -> {
-            return node.getOsmId() != nodeIdStart;
-        }).collect(Collectors.toList()));
-        p.setWays(p.getWays().stream().filter(way -> {
-            return way.getStart().getOsmId() != nodeIdStart;
-        }).collect(Collectors.toList()));
+        return -1.0;
     }
 
-    private static Path processQuery(ResultSet r) throws SQLException {
-        List<Node> nodes = new ArrayList<>();
-        List<Way> ways = new ArrayList<>();
-        double totalCost = 0.0;
-
-        while (r.next()) {
-            double cost = r.getDouble("cost");
-            totalCost += cost;
-            final Node fromNode = new Node(r.getLong("node"), r.getDouble("y1"), r.getDouble("x1"));
-            nodes.add(fromNode);
-            final Node toNode = new Node(r.getLong("node"), r.getDouble("y2"), r.getDouble("x2"));
-            nodes.add(toNode);
-            ways.add(new Way(fromNode, toNode, WayType.TWO_WAY, new WayWeight(cost), r.getLong("edge")));
+    public static Path getRouteWithDijkstraAlgorithm(long startNodeId, long endNodeId) {
+        try(Statement s = getConnection().createStatement()) {
+            String query = buildDijkstraQuery("pgr_dijkstra", startNodeId, endNodeId);
+            ResultSet r = s.executeQuery(query);
+            return processQuery(r);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        Path path = new Path(nodes, ways, totalCost);
-        return path;
+        return null;
     }
 
-    private static String buildRouteQuery(String algorithm, long nodeIdStart, long nodeIdEnd) {
+    public static Path getRouteWithBidirectionalDijkstraAlgorithm(long startNodeId, long endNodeId) {
+        try(Statement s = getConnection().createStatement()) {
+            String query = buildDijkstraQuery("pgr_bdDijkstra", startNodeId, endNodeId);
+            ResultSet r = s.executeQuery(query);
+            return processQuery(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Path getRouteWithAstarAlgorithm(long startNodeId, long endNodeId) {
+        try(Statement s = getConnection().createStatement()) {
+            String query = buildAstarQuery("pgr_astar", startNodeId, endNodeId);
+            ResultSet r = s.executeQuery(query);
+            return processQuery(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Path getRouteWithBidirectionalAstarAlgorithm(long startNodeId, long endNodeId) {
+        try(Statement s = getConnection().createStatement()) {
+            String query = buildAstarQuery("pgr_bdAstar", startNodeId, endNodeId);
+            ResultSet r = s.executeQuery(query);
+            return processQuery(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static String buildDijkstraQuery(String algorithm, long nodeIdStart, long nodeIdEnd) {
         return "SELECT ways.x1, ways.y1, ways.x2, ways.y2, seq, id1 AS node, id2 AS edge, cost FROM " + algorithm + "('" + newline +
                 "SELECT gid AS id," + newline +
                 "source::integer," + newline +
@@ -114,19 +126,55 @@ public class JavaGisDao {
                 nodeIdStart+", "+nodeIdEnd+", false, false) LEFT JOIN ways on (id1 = ways.gid);";
     }
 
-    private static String buildCostQuery(Long gid, double cost) {
-        return "update ways set to_cost = " + cost + " where gid = " + gid + ";";
+    private static String buildAstarQuery(String algorithm, long nodeIdStart, long nodeIdEnd) {
+        return "SELECT ways.x1, ways.y1, ways.x2, ways.y2, seq, id1 AS node, id2 AS edge, cost FROM " + algorithm + "('" + newline +
+                "SELECT gid AS id," + newline +
+                "source::integer," + newline +
+                "target::integer," + newline +
+                "length * ways.to_cost AS cost," + newline +
+                "x1, y1, x2, y2" + newline +
+                "FROM ways'," + newline +
+                nodeIdStart + ", " + nodeIdEnd + ", false, false) LEFT JOIN ways on (id1 = ways.gid);";
+    }
+
+    private static Path processQuery(ResultSet r) throws SQLException {
+        List<Node> nodes = new ArrayList<>();
+        List<Way> ways = new ArrayList<>();
+        double totalCost = 0.0;
+        double edgeCost = 0.0;
+        Node previousNode = null;
+        Long previousWayId = null;
+
+        while (r.next()) {
+            final double cost = r.getDouble("cost");
+            final Node currentNode = new Node(r.getLong("node"));
+
+            nodes.add(currentNode);
+            if(previousNode != null) {
+                ways.add(new Way(previousNode, currentNode, WayType.TWO_WAY, new WayWeight(edgeCost), previousWayId));
+            }
+            if(Double.compare(edgeCost, -1.0) != 0) {
+                previousNode = currentNode;
+                edgeCost = cost;
+                totalCost += edgeCost;
+                previousWayId = r.getLong("edge");
+            }
+        }
+        Path path = new Path(nodes, ways, totalCost);
+        return path;
     }
 
     private static Connection getConnection() throws ClassNotFoundException, SQLException {
-        Connection conn;
-        Class.forName("org.postgresql.Driver");
-        String pgsql_db = System.getenv("PGSQL_DB");
-        String pgsql_user = System.getenv("PGSQL_USER");
-        String url = "jdbc:postgresql://localhost:5432/" + pgsql_db;
-        String pgsql_password = System.getenv("PGSQL_PASSWORD");
-        logger.info(url + " " + pgsql_user + " " + pgsql_password);
-        conn = DriverManager.getConnection(url, pgsql_user, pgsql_password);
-        return conn;
+        if(connection == null) {
+            connection = DriverManager.getConnection(PropertyKeys.DRIVER_URL + dbname, username, password);
+        }
+        return connection;
+    }
+
+    private static void refreshConnection() throws Exception {
+        if(connection != null) {
+            connection.close();
+            connection = null;
+        }
     }
 }

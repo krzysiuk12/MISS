@@ -1,9 +1,9 @@
 package pl.edu.agh.miss.solver.dijkstra;
 
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.domain.Map;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.Path;
 import pl.edu.agh.miss.solver.ISolver;
 
 import java.util.*;
@@ -13,11 +13,16 @@ import java.util.*;
  */
 public class DijkstraSolver implements ISolver {
 
+    private Map map;
     private Set<Vertex> vertices = new HashSet<Vertex>();
     private PriorityQueue<Vertex> verticesQueue = new PriorityQueue<Vertex>();
 
+    public DijkstraSolver(Map map) {
+        this.map = map;
+    }
+
     @Override
-    public Path findPath(Node start, Node end, Map map) {
+    public Path findPath(Node start, Node end) {
         // System.out.println("Start: " + start + "\nEnd: " + end);
         initializeVertices(map.getNodes());
         Vertex sourceVertex = getVertexByNode(start);

@@ -2,22 +2,21 @@ package pl.edu.agh.miss.OSM;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.way.WayWeight;
+import pl.edu.agh.miss.gis.JavaGisDao;
 import pl.edu.agh.miss.gis.TrafficSimulationGis;
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.path.Path;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.Path;
 import pl.edu.agh.miss.simulation.*;
+import pl.edu.agh.miss.simulation.testCases.SimulationTestCase;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Handler;
-import java.util.logging.Level;
+import java.util.*;
 
 /**
  * Created by Krzysztof Kicinger on 2015-05-14.
@@ -25,38 +24,57 @@ import java.util.logging.Level;
 @RunWith(Parameterized.class)
 public class SimulationTestGis {
 
-    private static Map map;
-    private static Node startNode;
-    private static Node endNode;
+    private static Simulation simulation;
     private Logger logger = LogManager.getLogger(SimulationTestGis.class.getName());
     int pathRecalculationInterval = 10;
 
     public SimulationTestGis(int pathRecalculationInterval) {
         this.pathRecalculationInterval = pathRecalculationInterval;
     }
+
     @Parameterized.Parameters
     public static Collection recalculationIntervals() {
         return Arrays.asList(
-                1,
-                2,
-                3,
-                4
+//                1,
+//                2,
+//                3,
+//                4,
+//                5,
+//                6,
+//                7,
+//                8,
+//                9,
+                10
         );
     }
 
-    @BeforeClass
-    public static void beforeClass() {
-        startNode = new Node(103, 50.0619085, 19.9324703);
-        endNode = new Node(958, 50.0613054, 19.9323855);
-        map = new Map("Test Map One", null, null);
+    @Before
+    public void before() throws Exception {
+        String dbname = "rynek_database";
+        String username = "krzysztofkicinger";
+        String password = "postgres";
+        JavaGisDao gisDao = JavaGisDao.getInstance(dbname, username, password);
+        gisDao.refreshWays();
+        SimulationTestCase testCase = new SimulationTestCase(new Node(196L), new Node(579L), SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.0, 1, pathRecalculationInterval);
+        simulation = new Simulation(testCase, new TrafficSimulationGis(getTraffic(), new HashMap<>()));
     }
 
     @Test
     public void simulationFirstTest() throws Exception {
-        SimulationTestCase simulationTestCase = new SimulationTestCase(map, startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
-        TrafficSimulationGis trafficSimulation = new TrafficSimulationGis();
-        Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
+        //SimulationTestCase simulationTestCase = new SimulationTestCase(startNode, endNode, SimulationService.POSTGIS, SimulationAlgorithm.DIJKSTRA, 0.05, 2, pathRecalculationInterval);
+        //TrafficSimulationGis trafficSimulation = new TrafficSimulationGis(null, null);
+        //Simulation simulation = new Simulation(simulationTestCase, trafficSimulation);
         Path path = simulation.call();
-        System.out.println(pathRecalculationInterval + " " + path);
+        System.out.println(pathRecalculationInterval + ":\n " + path + "\n\n");
     }
+
+    private static Map<Integer, List<Way>> getTraffic() {
+        return new HashMap<Integer, List<Way>>() {{
+            put(4, Arrays.asList(new Way(560L, new WayWeight(JavaGisDao.getCost(560L) * 10000))));
+            put(19, Arrays.asList(new Way(717L, new WayWeight(JavaGisDao.getCost(717L) * 3))));
+//            put(18, Arrays.asList(new Way(18L, new WayWeight(JavaGisDao.getCost(18L) * 3))));
+//            put(26, Arrays.asList(new Way(2152L, new WayWeight(JavaGisDao.getCost(2152L) * 2))));
+        }};
+    }
+
 }

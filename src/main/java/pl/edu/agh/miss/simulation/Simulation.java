@@ -2,20 +2,20 @@ package pl.edu.agh.miss.simulation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pl.edu.agh.miss.map.Map;
-import pl.edu.agh.miss.map.Node;
-import pl.edu.agh.miss.map.way.Way;
-import pl.edu.agh.miss.map.way.WayWeight;
-import pl.edu.agh.miss.path.Path;
-import pl.edu.agh.miss.solver.ISolver;
-import pl.edu.agh.miss.solver.ISolverService;
-import pl.edu.agh.miss.solver.MapSolverService;
+import pl.edu.agh.miss.domain.Map;
+import pl.edu.agh.miss.domain.Node;
+import pl.edu.agh.miss.domain.way.Way;
+import pl.edu.agh.miss.domain.Path;
+import pl.edu.agh.miss.simulation.testCases.MapSimulationTestCase;
+import pl.edu.agh.miss.simulation.testCases.SimulationTestCase;
+import pl.edu.agh.miss.solver.AbstractSolverService;
+import pl.edu.agh.miss.solver.map.MapSolverService;
 import pl.edu.agh.miss.solver.dijkstra.DijkstraSolver;
-import pl.edu.agh.miss.solver.gis.PostgisSolver;
+import pl.edu.agh.miss.solver.gis.PostgisSolverService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,7 +36,7 @@ public class Simulation implements Callable<Path> {
         this.simulationTestCase = simulationTestCase;
         this.finalPath = createPath();
         this.trafficSimulation = trafficSimulation;
-        pathRecalculated = simulationTestCase.getPathRecalculationInterval();
+        pathRecalculated = 0;
     }
 
     @Override
@@ -45,54 +45,46 @@ public class Simulation implements Callable<Path> {
         finalPath.getNodes().add(currentPosition);
 
         Path path = null;
+        int iterationNumber = 1;
         while (!currentPosition.equals(simulationTestCase.getDestination())) {
-            ISolverService solverService = getSolverService();
-            logger.info("Current position: " + currentPosition);
-            logger.info("Solver created...");
-            logger.info("Finding path from " + currentPosition + " to " + simulationTestCase.getDestination());
+            AbstractSolverService solverService = getSolverService();
+            logger.debug("Current position: " + currentPosition);
+            logger.debug("Solver created...");
+            logger.debug("Finding path from " + currentPosition + " to " + simulationTestCase.getDestination());
 
-            if (pathRecalculated <= 0) {
-                pathRecalculated = simulationTestCase.getPathRecalculationInterval();
-            }
-
-            if (pathRecalculated == simulationTestCase.getPathRecalculationInterval()) {
+            if ((pathRecalculated % simulationTestCase.getPathRecalculationInterval()) == 0) {
                 solverService.findPath(currentPosition, simulationTestCase.getDestination());
                 Thread.sleep(simulationTestCase.getTimePeriodInSeconds() * 1000);
                 logger.info("Getting path...");
                 path = solverService.getPath();
             }
-            pathRecalculated--;
+            pathRecalculated++;
 
-            // FIXME: THIS THROWS NULL POINTER EXCEPTION WHEN THERE ARE NO RESULTS
-            Way nextWay = path.getWays().get(0);
-            solverService.updateWeight(nextWay);
-            path.getWays().remove(0);
-            currentPosition = nextWay.getDestination(currentPosition);
-            addWayToPath(nextWay);
-            logger.info("Next way: " + nextWay);
 
-            trafficSimulation.simulateTraffic();
-            trafficSimulation.simulateAccident();
-
-            logger.info("--------------------------------------------------------------------------------------------");
+            if(path != null && path.getWays() != null && !path.getWays().isEmpty()) {
+                Way nextWay = path.getWays().get(0);
+                solverService.updateWayInformation(nextWay);
+                path.getWays().remove(0);
+                currentPosition = nextWay.getDestination(currentPosition);
+                addWayToPath(nextWay);
+                logger.info("Next way: " + nextWay);
+                logger.debug("--------------------------------------------------------------------------------------------");
+            } else {
+                logger.debug("PATH CANNOT BE FOUND!!!");
+            }
+            trafficSimulation.simulateTraffic(iterationNumber);
+            trafficSimulation.simulateAccident(iterationNumber);
+            iterationNumber++;
         }
         return finalPath;
     }
 
-
-    private Set<ISolver> getSolvers() {
-        Set<ISolver> solvers = new HashSet<ISolver>();
-        if (simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION && simulationTestCase.getAlgorithm() == SimulationAlgorithm.DIJKSTRA) {
-            solvers.add(new DijkstraSolver());
-        }
-        return solvers;
-    }
-
-    private ISolverService getSolverService() {
+    private AbstractSolverService getSolverService() {
         if (simulationTestCase.getSimulationService() == SimulationService.IMPLEMENTATION) {
-            return new MapSolverService(simulationTestCase.getMap(), getSolvers());
+            Map map = ((MapSimulationTestCase)simulationTestCase).getMap();
+            return new MapSolverService(map, new HashSet<>(Arrays.asList(new DijkstraSolver(map))));
         } else if (simulationTestCase.getSimulationService() == SimulationService.POSTGIS) {
-            return new PostgisSolver();
+            return new PostgisSolverService();
         }
         return null;
     }

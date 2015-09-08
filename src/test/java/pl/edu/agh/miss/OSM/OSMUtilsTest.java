@@ -2,12 +2,13 @@ package pl.edu.agh.miss.OSM;
 
 import org.junit.Assert;
 import org.w3c.dom.Document;
+import pl.edu.agh.miss.osmimporter.OSMWay;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.util.List;
 
-import static pl.edu.agh.miss.OSM.OSMUtils.getWaysWithNodes;
+import static pl.edu.agh.miss.osmimporter.OSMUtils.getWaysWithNodes;
 
 /**
  * Created by slonka on 27.04.15.
